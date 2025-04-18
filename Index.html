@@ -196,11 +196,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            padding: 8px 20px;
+            margin-bottom: 50px;
+            background-color: #ff3300;
         }
         .close-menu {
-            color: #ff0000;
-            font-size: 24px;
+            background-color: #fff;
+            color: #ff3300;
+            font-size: 28px;
+            border-radius: 50px;
             cursor: pointer;
         }
         .social-media-list {
@@ -215,7 +219,7 @@
             transition: 0.3s;
         }
         .social-media-item:hover {
-            color: #00b300;
+            color: #ff3300;
             transform: translateX(10px);
         }
         .social-media-item i {
@@ -303,7 +307,7 @@
     <div class="menu-overlay" id="menuOverlay"></div>
     <div class="sidebar-menu" id="sidebarMenu">
         <div class="menu-header">
-            <h3 style="color: #fff">Menu</h3>
+            <h3 style="color: #fff"><i class="fas fa-stream"></i></h3>
             <div class="close-menu" onclick="closeMenu()" aria-label="Close settings menu">×</div>
         </div>
         <ul class="social-media-list">
@@ -466,18 +470,18 @@
         const ads = [
             {
                 image: "https://bit.ly/4gHMJHL",
-                link: "https://true-click.pro/a/44J1UBOggfxOkx",
+                link: "https://www.profitableratecpm.com/f9z72jat9s?key=fb6ef61efc0589cd3f5c869f9e3a5a18",
                 buttonTitle: "Chat Now"
             },                
             {
                 image: "https://bit.ly/49TAXap",
-                link: "https://true-click.pro/a/44J1UBOggfxOkx",
+                link: "https://www.profitableratecpm.com/gph5sivvp?key=7191fbf56c824024de7a4266801a0e57",
                 buttonTitle: "Chat Now"
             }
         ];
         let currentAdIndex = 0;
         const firstPopupDelay = 150000;
-        const popupInterval = 30000;
+        const popupInterval = 200000;
 
         function showAd() {
             if (!adsEnabled) return; // Only show ads if enabled
