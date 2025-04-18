@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapon</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 20px;
+            background-color: #ff3300;
+            z-index: 1000;
+        }
+        .logo-container {
+            display: flex;
+            color: #fff;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo {
+            height: 35px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        .balance-container {
+            display: flex;
+            font-size: 15.5px;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        .wallet-icon {
+            font-size: 21px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #fff;
+        }
+        .header .bars-icon {
+            font-size: 20px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .header .bars-icon:hover {
+            color: #00b300;
+        }
+
+        /* Ad Toggle Styles */
+        .ad-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            cursor: pointer;
+            padding: 3px 5px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .ad-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 10px;
+            position: relative;
+            transition: 0.3s;
+        }
+        .toggle-knob {
+            width: 16px;
+            height: 16px;
+            background: #ff0000;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+        .ad-toggle.active .toggle-switch {
+            background: #ccc;
+        }
+        .ad-toggle.active .toggle-knob {
+            background: #00b300;
+            left: 22px;
+        }
+
+        /* Video Container */
+        .frame-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* Ad Overlay */
+        .ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .ad-popup {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .ad-popup img {
+            width: 100%;
+            border-radius: 15px;
+            display: block;
+        }
+        .ad-popup .close-btn {
+            position: absolute;
+            top: 7px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            border: none;
+            padding: 0px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .ad-popup .get-btn {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff2200;
+            color: white;
+            padding: 8px 20px;
+            font-size: 17px;
+            border: none;
+            border-radius: 30px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            transition: 0.3s;
+            z-index: 2000;
+            padding: 20px;
+            box-shadow: -2px 0 15px rgba(0,0,0,0.2);
+        }
+        .sidebar-menu.active {
+            right: 0;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .close-menu {
+            color: #ff0000;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .social-media-list {
+            list-style: none;
+        }
+        .social-media-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            color: #ff0000;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .social-media-item:hover {
+            color: #00b300;
+            transform: translateX(10px);
+        }
+        .social-media-item i {
+            font-size: 20px;
+            width: 30px;
+            margin-right: 15px;
+        }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            display: none;
+        }
+
+        /* Wallet Overlay */
+        .wallet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        .wallet-popup {
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .balance-display {
+            font-size: 2.1rem;
+            color: #444;
+            margin: 20px 0;
+        }
+        .withdraw-btn {
+            background: #ff5500;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .withdraw-btn:disabled {
+            background: #ff000;
+            cursor: not-allowed;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Wallet Overlay -->
+    <div class="wallet-overlay" id="walletOverlay">
+        <div class="wallet-popup" role="dialog" aria-labelledby="withdrawTitle" aria-modal="true">
+            <div class="menu-header">
+                <h3 id="withdrawTitle" style="color: #333">Balance</h3>
+                <div class="close-menu" onclick="closeWallet()" aria-label="Close wallet overlay">×</div>
+            </div>
+            <div class="balance-display" id="balanceDisplay">$0.00000</div>
+            <button class="withdraw-btn" id="withdrawBtn" onclick="handleWithdraw()">
+                Withdraw
+            </button>
+            <p style="color: #888; margin-top: 15px; font-size: 12px;">
+                (Minimum amount for withdrawal $100). Earn more by visiting ads <i class="fab fa-paypal"></i> PayPal <i class="fab fa-bitcoin"></i> Bitcoin <i class="fab fa-ethereum"></i> Ethereum
+            </p>
+        </div>
+    </div>
+
+    <!-- Social Media Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <h3 style="color: #fff">Menu</h3>
+            <div class="close-menu" onclick="closeMenu()" aria-label="Close settings menu">×</div>
+        </div>
+        <ul class="social-media-list">
+            <li>
+                <a href="https://facebook.com" class="social-media-item" target="_blank" aria-label="Visit our Facebook page">
+                    <i class="fab fa-facebook"></i>
+                    Facebook
+                </a>
+            </li>
+            <li>
+                <a href="https://twitter.com" class="social-media-item" target="_blank" aria-label="Visit our Twitter page">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </a>
+            </li>
+            <li>
+                <a href="https://instagram.com" class="social-media-item" target="_blank" aria-label="Visit our Instagram page">
+                    <i class="fab fa-instagram"></i>
+                    Instagram
+                </a>
+            </li>
+            <li>
+                <a href="https://youtube.com" class="social-media-item" target="_blank" aria-label="Visit our YouTube page">
+                    <i class="fab fa-youtube"></i>
+                    YouTube
+                </a>
+            </li>
+            <li>
+                <a href="https://tiktok.com" class="social-media-item" target="_blank" aria-label="Visit our TikTok page">
+                    <i class="fab fa-tiktok"></i>
+                    TikTok
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-container">
+            <!-- Replace with your image URL -->
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAM1BMVEVHcEz6JAD5JQD5JQD5JQD5JQD5JQD5AAD6NBX+2NP5HQD6QSj////8fnL9sqv+zsz/9fJDOj8dAAAAB3RSTlMAHabw/6pQEja29gAAAJJJREFUeAHd00cWgzAMRVEZffe6/9WG3hEnGeaOH7gTkeoYt1gr6hkIDJGCSJGGqCOGiAkjewOjKXD+xi4IMd2I4afA51y8EPSKtdZlcYgcghWDahG+DOBSG+yDlhwGh53cAhx3chZ2Qe9vgywGvRCKGPSsq3LQJ7n5Q8A4CsG6w7XvINLvT+/t8faUZtziThF9AMKHGVpn6yXgAAAAAElFTkSuQmCC" alt="Movie Gram Logo" class="logo" /><span>Tapon</span>
+        </div>
+        <div class="balance-container">
+            <i class="fas fa-wallet wallet-icon" onclick="showWallet()" aria-label="Open wallet"></i>
+            <span id="headerBalance">$0.00000</span>
+        </div>
+        <div class="ad-toggle" id="adToggle" onclick="toggleAd()">
+            <span><i class="fas fa-ad"></i></span>
+            <div class="toggle-switch">
+                <div class="toggle-knob"></div>
+            </div>
+        </div>
+        <div class="button-group">
+            <div class="bars-icon" onclick="toggleMenu()">
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Container -->
+    <div class="frame-container">
+        <iframe id="video-frame" allowfullscreen></iframe>
+    </div>
+
+    <!-- Ad Overlay -->
+    <div class="ad-overlay" id="adOverlay">
+        <div class="ad-popup">
+            <button class="close-btn" onclick="closeAd()" aria-label="Close ad">✖</button>
+            <img id="adImage" src="" alt="Ad Image">
+            <button class="get-btn">Chat Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables
+        let videoUrl = "https://www.tapon.com/"; // Change this URL to the video you want to display
+        let balance = parseFloat(localStorage.getItem('userBalance')) || 0;
+        let adsEnabled = true; // Track whether ads are enabled, default to true
+        const videoFrame = document.getElementById("video-frame");
+        const navIcons = document.querySelectorAll(".nav-icon");
+        const body = document.body;
+
+        // Update Balance Display
+        function updateBalanceDisplay() {
+            document.getElementById('balanceDisplay').textContent = `$${balance.toFixed(5)}`;
+            document.getElementById('headerBalance').textContent = `$${balance.toFixed(5)}`;
+            localStorage.setItem('userBalance', balance);
+            document.getElementById('withdrawBtn').disabled = balance < 100;
+        }
+
+        // Show and Hide Wallet
+        function showWallet() {
+            document.getElementById('walletOverlay').style.display = 'flex';
+            updateBalanceDisplay();
+        }
+        function closeWallet() {
+            document.getElementById('walletOverlay').style.display = 'none';
+        }
+
+        // Handle Withdraw
+        function handleWithdraw() {
+            if (balance >= 100) {
+                if(confirm(`Are you sure you want to withdraw $${balance.toFixed(2)}?`)) {
+                    alert('Withdrawal request sent! Payment will be processed within 7 working days.');
+                    balance = 0;
+                    updateBalanceDisplay();
+                }
+            } else {
+                alert('Minimum withdrawal amount is $100. Keep watching to earn more!');
+            }
+        }
+
+        // Change Video
+        function changeVideo(src) {
+            videoFrame.style.opacity = "0";
+            setTimeout(() => {
+                videoFrame.src = src;
+                videoFrame.style.opacity = "1";
+            }, 300);
+        }
+
+        // Set Current Video URL
+        function setCurrentVideo() {
+            changeVideo(videoUrl); // Use the variable to set the video URL
+        }
+
+        // Toggle Menu
+        function toggleMenu() {
+            document.getElementById("sidebarMenu").classList.toggle("active");
+            document.getElementById("menuOverlay").style.display = "block";
+        }
+        function closeMenu() {
+            document.getElementById("sidebarMenu").classList.remove("active");
+            document.getElementById("menuOverlay").style.display = "none";
+        }
+        document.getElementById("menuOverlay").addEventListener("click", closeMenu);
+
+        // Theme Toggle
+        function toggleTheme() {
+            const isDarkMode = body.classList.toggle('dark-mode');
+            body.style.backgroundColor = isDarkMode ? '#fff' : '#000';
+            body.style.color = isDarkMode ? '#000' : '#fff';
+        }
+
+        // Ad Toggle
+        function toggleAd() {
+            adsEnabled = !adsEnabled; // Toggle the state
+            const adToggleElement = document.getElementById('adToggle');
+            adToggleElement.classList.toggle('active', adsEnabled); // Update toggle UI
+
+            // Show or hide ads based on the toggle state
+            if (adsEnabled) {
+                showAd(); // Start showing ads if enabled
+            } else {
+                closeAd(); // Hide ads if disabled
+            }
+        }
+
+        // Ad System
+        const ads = [
+            {
+                image: "https://bit.ly/4gHMJHL",
+                link: "https://true-click.pro/a/44J1UBOggfxOkx",
+                buttonTitle: "Chat Now"
+            },                
+            {
+                image: "https://bit.ly/49TAXap",
+                link: "https://true-click.pro/a/44J1UBOggfxOkx",
+                buttonTitle: "Chat Now"
+            }
+        ];
+        let currentAdIndex = 0;
+        const firstPopupDelay = 150000;
+        const popupInterval = 30000;
+
+        function showAd() {
+            if (!adsEnabled) return; // Only show ads if enabled
+            
+            const lastPopupTime = localStorage.getItem('lastPopupTime');
+            const currentTime = Date.now();
+
+            if (!lastPopupTime || currentTime - lastPopupTime >= popupInterval) {
+                updateAdContent();
+                document.getElementById('adOverlay').style.display = 'flex';
+                balance += 0.00001; // Increase balance for showing the ad
+                updateBalanceDisplay(); // Update balance displayed
+                localStorage.setItem('lastPopupTime', currentTime);
+            } else {
+                setTimeout(showAd, popupInterval - (currentTime - lastPopupTime));
+            }
+        }
+        function updateAdContent() {
+            const ad = ads[currentAdIndex];
+            const getBtn = document.querySelector(".get-btn");
+            
+            document.getElementById("adImage").src = ad.image;
+            document.getElementById("adImage").setAttribute("data-link", ad.link);
+            getBtn.setAttribute("data-link", ad.link);
+            getBtn.textContent = ad.buttonTitle;
+            
+            document.getElementById("adImage").onclick = visitAd;
+            getBtn.onclick = visitAd;
+
+            currentAdIndex = (currentAdIndex + 1) % ads.length;
+        }
+        function visitAd(event) {
+            const url = event.target.getAttribute("data-link");
+            window.open(url, '_blank');
+            
+            // Add earnings for clicking the ad (if desired)
+            balance += 0.00021; // Optional: give extra balance for ad click
+            updateBalanceDisplay();
+            closeAd();
+        }
+        function closeAd() {
+            document.getElementById('adOverlay').style.display = 'none';
+            setTimeout(showAd, popupInterval);
+        }
+
+        // Initialize
+        window.onload = function () {
+            setCurrentVideo(); // Set the video URL on load
+            updateBalanceDisplay();
+            
+            // Immediately show ads upon page load
+            const adToggleElement = document.getElementById('adToggle');
+            adToggleElement.classList.add('active'); // Set the toggle on
+            showAd(); // Show the first ad immediately
+        };
+    </script>
+</body>
+</html>
